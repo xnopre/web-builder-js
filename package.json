@@ -4,13 +4,14 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "babelify": "^7.3.0",
     "browserify": "^13.1.0",
+    "node-static": "^0.7.8",
     "rauricoste-file": "0.0.x",
     "rauricoste-promise-light": "0.0.x",
     "watch": "^0.19.2"
