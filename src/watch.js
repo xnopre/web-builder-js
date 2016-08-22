@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 var watch = require("watch");
-var configHelper = require("./ConfigHelper")(config);
-var modules = configHelper.getModules();
 
 var Files = require("./Files");
 var BuilderCopy = require("./BuilderCopy");
@@ -29,6 +27,9 @@ var buildInc = function(module, filename) {
 
 
 module.exports = function(config) {
+    var configHelper = require("./ConfigHelper")(config);
+    var modules = configHelper.getModules();
+
     buildTask(config);
     modules.forEach(function(module) {
         if (module.watch) {
