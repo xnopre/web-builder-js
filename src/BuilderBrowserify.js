@@ -10,7 +10,7 @@ var buildJs = function(module) {
     console.log("Browserify", entry, " => ", output);
 
     return browserify(entry, {debug: true})
-      .transform("babelify", {presets: ["es2015", "react"]})
+      .transform("babelify", {})
       .bundle()
       .pipe(fs.createWriteStream(output));
 }
