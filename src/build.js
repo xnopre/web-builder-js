@@ -10,7 +10,7 @@ module.exports = function(config) {
     var configHelper = require("./ConfigHelper")(config);
     var modules = configHelper.getModules();
 
-    Q.all(modules.map(function(module) {
+    return Q.all(modules.map(function(module) {
         console.log("mkdir", module.dist);
         return new File(module.dist).mkdir().catch(function() {});
     })).then(function() {
