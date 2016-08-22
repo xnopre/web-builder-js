@@ -10,11 +10,16 @@ var buildJs = function(module) {
     var output = module.dist+"/"+module.browserify.output;
     console.log("Browserify", entry, " => ", output);
 
+    var defer = Q.defer();
+    var writeStream = fs.createWriteStream(output);
+    writeStream.on("close", function() {
+        defer.resolve();
+    })
     browserify(entry, {debug: true})
       .transform("babelify")
       .bundle()
-      .pipe(fs.createWriteStream(output))
-    return Q.empty();
+      .pipe(writeStream)
+    return defer.promise;
 }
 
 module.exports = buildJs;
