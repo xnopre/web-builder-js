@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babelify": "^7.3.0",
     "browserify": "^13.1.0",
     "rauricoste-file": "0.0.x",
     "rauricoste-promise-light": "0.0.x",
