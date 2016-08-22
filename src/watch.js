@@ -7,6 +7,7 @@ var modules = configHelper.getModules();
 var Files = require("./Files");
 var BuilderCopy = require("./BuilderCopy");
 var BuilderBrowserify = require("./BuilderBrowserify");
+var buildTask = require("./build");
 
 var buildInc = function(module, filename) {
     if (Files.isRegularFile(filename)) {
@@ -26,7 +27,9 @@ var buildInc = function(module, filename) {
     }
 }
 
+
 module.exports = function(config) {
+    buildTask(config);
     modules.forEach(function(module) {
         if (module.watch) {
             console.log("module", module.name, ": watching dir", module.src);
