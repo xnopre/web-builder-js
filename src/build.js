@@ -14,9 +14,12 @@ module.exports = function(config) {
         console.log("mkdir", module.dist);
         return new File(module.dist).mkdir().catch(function() {});
     })).then(function() {
-        modules.forEach(BuilderBrowserify);
-        ["css", "html"].forEach(function(extension) {
-            modules.forEach(BuilderAssets(extension));
+        return Q.traverse(modules, function(module) {
+            return BuilderBrowserify(module).then(function() {
+                return Q.traverse(["css", "html"], function(extension) {
+                    return BuilderAssets(extension)(module);
+                })
+            })
         })
     })
 }

@@ -2,6 +2,7 @@
 
 var fs = require("fs");
 var browserify = require("browserify");
+var Q = require("rauricoste-promise-light");
 
 var buildJs = function(module) {
     console.log("building module", module.name, ": JS");
@@ -9,10 +10,11 @@ var buildJs = function(module) {
     var output = module.dist+"/"+module.browserify.output;
     console.log("Browserify", entry, " => ", output);
 
-    return browserify(entry, {debug: true})
+    browserify(entry, {debug: true})
       .transform("babelify")
       .bundle()
-      .pipe(fs.createWriteStream(output));
+      .pipe(fs.createWriteStream(output))
+    return Q.empty();
 }
 
 module.exports = buildJs;
