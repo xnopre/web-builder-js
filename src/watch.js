@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var File = require("rauricoste-file");
 var watch = require("watch");
 
 var Files = require("./Files");
@@ -17,8 +18,7 @@ var buildInc = function(module, filename) {
                 break;
             case "css":
             case "html":
-                var file = new File(filename);
-                BuilderCopy(module, file);
+                BuilderCopy(module, new File(filename));
                 break;
             default:
                 break;
@@ -40,8 +40,10 @@ module.exports = function(config) {
         //                console.log("walked done");
                     } else if (prev === null) {
                         console.log("new file", file);
+                        buildInc(module, file);
                     } else if (curr.nlink === 0) {
                         console.log("file deleted", file);
+                        buildInc(module, file);
                     } else {
                         console.log("file changed", file);
                         buildInc(module, file);
