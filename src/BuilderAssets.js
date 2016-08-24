@@ -9,7 +9,7 @@ module.exports = function(extension) {
         console.log("building module", module.name, ":", extension);
         var srcFile = new File(module.src);
         return srcFile.crawl(function(file) {
-            return Files.getExtension(file.name()) === extension;
+            return !file.isFile() || Files.getExtension(file.name()) === extension;
         }).then(function(files) {
             return Q.traverse(files, function(file) {
                 return BuilderCopy(module, file);
