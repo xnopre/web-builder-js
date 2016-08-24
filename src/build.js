@@ -12,7 +12,7 @@ module.exports = function(config) {
 
     return Q.all(modules.map(function(module) {
         console.log("mkdir", module.dist);
-        return new File(module.dist).mkdir().catch(function() {});
+        return new File(module.dist).mkdirs();
     })).then(function() {
         return Q.traverse(modules, function(module) {
             return BuilderBrowserify(module).then(function() {
