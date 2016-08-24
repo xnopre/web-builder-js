@@ -6,6 +6,9 @@ module.exports = {
                 entry: "index.js",
                 output: "bundle.js"
             },
+            concat: {
+                css: "bundle.css"
+            },
             dist: "dist",
             watch: true
         }

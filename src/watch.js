@@ -6,6 +6,7 @@ var watch = require("watch");
 var Files = require("./Files");
 var BuilderCopy = require("./BuilderCopy");
 var BuilderBrowserify = require("./BuilderBrowserify");
+var BuilderConcat = require("./BuilderConcat");
 var buildTask = require("./build");
 var serveTask = require("./serve");
 
@@ -17,6 +18,8 @@ var buildInc = function(module, filename) {
                 BuilderBrowserify(module);
                 break;
             case "css":
+                BuilderConcat(extension)(module);
+                break;
             case "html":
                 BuilderCopy(module, new File(filename));
                 break;

@@ -2,6 +2,7 @@
 
 var BuilderBrowserify = require("./BuilderBrowserify");
 var BuilderAssets = require("./BuilderAssets");
+var BuilderConcat = require("./BuilderConcat");
 var BuilderCopy = require("./BuilderCopy");
 var File = require("rauricoste-file");
 var Q = require("rauricoste-promise-light");
@@ -16,8 +17,12 @@ module.exports = function(config) {
     })).then(function() {
         return Q.traverse(modules, function(module) {
             return BuilderBrowserify(module).then(function() {
-                return Q.traverse(["css", "html"], function(extension) {
+                return Q.traverse(["html"], function(extension) {
                     return BuilderAssets(extension)(module);
+                })
+            }).then(function() {
+                return Q.traverse(["css"], function(extension) {
+                    return BuilderConcat(extension)(module);
                 })
             })
         })
