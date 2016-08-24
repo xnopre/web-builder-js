@@ -12,7 +12,6 @@ module.exports = function(config) {
     var modules = configHelper.getModules();
 
     return Q.all(modules.map(function(module) {
-        console.log("mkdir", module.dist);
         return new File(module.dist).mkdirs();
     })).then(function() {
         return Q.traverse(modules, function(module) {

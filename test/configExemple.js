@@ -1,4 +1,5 @@
 module.exports = {
+    dist: "dist",
     modules: {
         main: {
             src: "test",
@@ -9,7 +10,6 @@ module.exports = {
             concat: {
                 css: "bundle.css"
             },
-            dist: "dist",
             watch: true
         }
     },

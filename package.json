@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "babelify": "^7.3.0",
+    "browser-sync": "^2.14.0",
     "browserify": "^13.1.0",
     "node-static": "^0.7.8",
     "rauricoste-file": "0.0.x",
