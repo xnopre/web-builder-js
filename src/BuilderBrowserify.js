@@ -17,7 +17,11 @@ var buildJs = function(module) {
     })
     browserify(entry, {debug: true})
       .transform("babelify")
-      .bundle()
+      .bundle(function(err, buf) {
+        if (err) {
+            defer.reject(err);
+        }
+      })
       .pipe(writeStream)
     return defer.promise;
 }

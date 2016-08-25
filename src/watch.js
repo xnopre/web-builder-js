@@ -60,10 +60,14 @@ module.exports = function(config) {
                         }
                         promise.then(function() {
                             browserSync.reload();
+                        }).catch(function(err) {
+                            console.error(err.stack);
                         })
                     }
                 });
             }
         });
+    }).catch(function(err) {
+        console.error(err.stack);
     });
 }
