@@ -5,6 +5,9 @@ var browserify = require("browserify");
 var Q = require("rauricoste-promise-light");
 
 var buildJs = function(module) {
+    if (!(module.browserify && module.browserify.entry && module.browserify.output)) {
+        return Q.empty();
+    }
     console.log("building module", module.name, ": JS");
     var entry = module.src+"/"+module.browserify.entry;
     var output = module.dist+"/"+module.browserify.output;

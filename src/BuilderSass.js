@@ -3,6 +3,9 @@ var Q = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
 module.exports = function(module) {
+    if (!(module.sass && module.sass.entry && module.sass.output)) {
+        return Q.empty();
+    }
     console.log("building module", module.name, ": SASS");
     var inputFile = new File(module.src+"/"+module.sass.entry);
     var outputFile = new File(module.dist+"/"+module.sass.output);
