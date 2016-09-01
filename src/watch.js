@@ -8,6 +8,8 @@ var Files = require("./Files");
 var BuilderCopy = require("./BuilderCopy");
 var BuilderBrowserify = require("./BuilderBrowserify");
 var BuilderConcat = require("./BuilderConcat");
+var BuilderSass = require("./BuilderSass");
+
 var buildTask = require("./build");
 var serveTask = require("./serve");
 
@@ -24,6 +26,8 @@ var buildInc = function(module, filename) {
             case "html":
                 return BuilderCopy(module, new File(filename));
                 break;
+            case "scss":
+                return BuilderSass(module);
             default:
                 break;
         }

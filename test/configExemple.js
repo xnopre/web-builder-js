@@ -7,6 +7,10 @@ module.exports = {
                 entry: "index.js",
                 output: "bundle.js"
             },
+            sass: {
+                entry: "main.scss",
+                output: "bundle-sass.css"
+            },
             concat: {
                 css: "bundle.css"
             },
