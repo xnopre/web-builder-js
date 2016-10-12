@@ -47,7 +47,7 @@ module.exports = function(config) {
         modules.forEach(function(module) {
             if (module.watch) {
                 console.log("module", module.name, ": watching dir", module.src);
-                watch.watchTree(module.src, {interval: 200}, function (file, curr, prev) {
+                watch.watchTree(module.src, {interval: 1}, function (file, curr, prev) {
                     if (typeof file == "object" && prev === null && curr === null) {
         //                console.log("walked done");
                     } else {
