@@ -3,6 +3,7 @@
 var fs = require("fs");
 var browserify = require("browserify");
 var Q = require("rauricoste-promise-light");
+var babelify = require("babelify");
 
 var buildJs = function(module) {
     if (!(module.browserify && module.browserify.entry && module.browserify.output)) {
@@ -19,7 +20,11 @@ var buildJs = function(module) {
         defer.resolve();
     })
     browserify(entry, {debug: true})
-      .transform("babelify")
+      .transform(babelify, {
+        presets: ["es2015", "react"].map(function(presetName) {
+            return require("babel-preset-"+presetName);
+        })
+      })
       .bundle(function(err, buf) {
         if (err) {
             defer.reject(err);
