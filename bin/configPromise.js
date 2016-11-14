@@ -1,7 +1,7 @@
 var args = process.argv;
 if (args.length !== 3) {
     console.log("args", args);
-    throw new Error("usage: <command> <config file>")
+    throw new Error("usage: <command> <config file>. config file should be a JSON file.")
 }
 var configFileName = args[2];
 console.log("loading config", configFileName);
