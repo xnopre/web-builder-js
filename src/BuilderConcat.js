@@ -16,6 +16,8 @@ module.exports = function(extension) {
             return !file.isFile() || Files.getExtension(file.name()) === extension;
         }).then(function(files) {
             return destFile.delete().catch(function() {}).then(function() {
+                return destFile.parent().mkdirs();
+            }).then(function() {
                 return Q.traverse(files, function(file) {
                     return file.read().then(function(content) {
                         return destFile.append(content+"\n");
