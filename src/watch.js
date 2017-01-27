@@ -18,7 +18,9 @@ var buildInc = function(module, filename) {
         var extension = Files.getExtension(filename);
         switch(extension) {
             case "js":
-                return BuilderBrowserify(module);
+                return BuilderBrowserify(module).then(function() {
+                    return BuilderConcat(extension)(module);
+                });
                 break;
             case "css":
                 return BuilderConcat(extension)(module);
@@ -29,6 +31,7 @@ var buildInc = function(module, filename) {
             case "scss":
                 return BuilderSass(module);
             default:
+                return BuilderConcat(extension)(module);
                 break;
         }
     } else {

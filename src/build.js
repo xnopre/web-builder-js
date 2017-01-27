@@ -19,7 +19,9 @@ module.exports = function(config) {
             return BuilderBrowserify(module).then(function() {
                 return BuilderAssets("html")(module);
             }).then(function() {
-                return BuilderConcat("css")(module);
+                return Q.traverse(Object.keys(module.concat || {}), function(extension) {
+                    return BuilderConcat(extension)(module);
+                })
             }).then(function() {
                 return BuilderSass(module);
             })
