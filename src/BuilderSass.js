@@ -9,21 +9,23 @@ module.exports = function(module) {
     console.log("building module", module.name, ": SASS");
     var inputFile = new File(module.src+"/"+module.sass.entry);
     var outputFile = new File(module.dist+"/"+module.sass.output);
-    var defer = Q.defer();
-    sass.render({
-        file: inputFile.path,
-        outputStyle: "nested"
-    }, function(err, result) {
-        if (err) {
-            defer.reject(err);
-            return;
-        }
-        var cssContent = result.css.toString();
-        outputFile.write(cssContent).then(function() {
-            defer.resolve();
-        }).catch(function(err) {
-            defer.reject(err);
-        });
-    })
-    return defer.promise;
+    return outputFile.parent().mkdirs().then(function() {
+        var defer = Q.defer();
+        sass.render({
+            file: inputFile.path,
+            outputStyle: "nested"
+        }, function(err, result) {
+            if (err) {
+                defer.reject(err);
+                return;
+            }
+            var cssContent = result.css.toString();
+            outputFile.write(cssContent).then(function() {
+                defer.resolve();
+            }).catch(function(err) {
+                defer.reject(err);
+            });
+        })
+        return defer.promise;
+    });
 }
