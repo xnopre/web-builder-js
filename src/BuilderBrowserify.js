@@ -4,6 +4,7 @@ var fs = require("fs");
 var browserify = require("browserify");
 var Q = require("rauricoste-promise-light");
 var babelify = require("babelify");
+var File = require("rauricoste-file");
 
 var buildJs = function(module) {
     if (!(module.browserify && module.browserify.entry && module.browserify.output)) {
@@ -14,24 +15,26 @@ var buildJs = function(module) {
     var output = module.dist+"/"+module.browserify.output;
     console.log("Browserify", entry, " => ", output);
 
-    var defer = Q.defer();
-    var writeStream = fs.createWriteStream(output);
-    writeStream.on("close", function() {
-        defer.resolve();
-    })
-    browserify(entry, {debug: true})
-      .transform(babelify, {
-        presets: ["es2015", "react"].map(function(presetName) {
-            return require("babel-preset-"+presetName);
+    return new File(output).parent().mkdirs().then(function() {
+        var defer = Q.defer();
+        var writeStream = fs.createWriteStream(output);
+        writeStream.on("close", function() {
+            defer.resolve();
         })
-      })
-      .bundle(function(err, buf) {
-        if (err) {
-            defer.reject(err);
-        }
-      })
-      .pipe(writeStream)
-    return defer.promise;
+        browserify(entry, {debug: true})
+          .transform(babelify, {
+            presets: ["es2015", "react"].map(function(presetName) {
+                return require("babel-preset-"+presetName);
+            })
+          })
+          .bundle(function(err, buf) {
+            if (err) {
+                defer.reject(err);
+            }
+          })
+          .pipe(writeStream)
+        return defer.promise;
+    })
 }
 
 module.exports = buildJs;
