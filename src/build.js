@@ -17,7 +17,9 @@ module.exports = function(config) {
     })).then(function() {
         return Q.traverse(modules, function(module) {
             return BuilderBrowserify(module).then(function() {
-                return BuilderAssets("html")(module);
+                return Q.traverse(module.assets, function(extension) {
+                    return BuilderAssets(extension)(module);
+                })
             }).then(function() {
                 return Q.traverse(Object.keys(module.concat || {}), function(extension) {
                     return BuilderConcat(extension)(module);

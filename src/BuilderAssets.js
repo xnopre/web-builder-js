@@ -6,6 +6,9 @@ var BuilderCopy = require("./BuilderCopy");
 
 module.exports = function(extension) {
     return function(module) {
+        if (!module.assets || module.assets.indexOf(extension) === -1) {
+            return Q.empty();
+        }
         console.log("building module", module.name, ":", extension);
         var srcFile = new File(module.src);
         return srcFile.crawl(function(file) {

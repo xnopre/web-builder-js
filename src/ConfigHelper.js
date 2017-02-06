@@ -5,6 +5,7 @@ module.exports = function(config) {
                 var module = config.modules[moduleName];
                 module.name = moduleName;
                 module.dist = module.dist || config.dist;
+                module.assets = module.assets || ["html"];
                 return module;
             });
         }
