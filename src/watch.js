@@ -42,7 +42,7 @@ var buildInc = function(module, filename) {
 
 module.exports = function(config) {
     var configHelper = require("./ConfigHelper")(config);
-    var modules = configHelper.getModules();
+    var modules = configHelper.getModules(false);
 
     buildTask(config).then(function() {
         return serveTask(config);

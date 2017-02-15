@@ -8,9 +8,9 @@ var BuilderSass = require("./BuilderSass");
 var File = require("rauricoste-file");
 var Q = require("rauricoste-promise-light");
 
-module.exports = function(config) {
+module.exports = function(config, isProd) {
     var configHelper = require("./ConfigHelper")(config);
-    var modules = configHelper.getModules();
+    var modules = configHelper.getModules(isProd);
 
     return Q.all(modules.map(function(module) {
         return new File(module.dist).mkdirs();

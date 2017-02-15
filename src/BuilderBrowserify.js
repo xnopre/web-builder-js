@@ -5,6 +5,7 @@ var browserify = require("browserify");
 var Q = require("rauricoste-promise-light");
 var babelify = require("babelify");
 var File = require("rauricoste-file");
+var MinifyWrapper = require("./MinifyWrapper");
 
 var buildJs = function(module) {
     if (!(module.browserify && module.browserify.entry && module.browserify.output)) {
@@ -34,6 +35,13 @@ var buildJs = function(module) {
           })
           .pipe(writeStream)
         return defer.promise;
+    }).then(function() {
+        if (module.isProd) {
+            var outputMin = output+".min";
+            return MinifyWrapper(output, outputMin).then(function() {
+                return new File(outputMin).moveTo(new File(output));
+            })
+        }
     })
 }
 
