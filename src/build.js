@@ -3,7 +3,6 @@
 var BuilderBrowserify = require("./BuilderBrowserify");
 var BuilderAssets = require("./BuilderAssets");
 var BuilderConcat = require("./BuilderConcat");
-var BuilderCopy = require("./BuilderCopy");
 var BuilderSass = require("./BuilderSass");
 var File = require("rauricoste-file");
 var Q = require("rauricoste-promise-light");

@@ -22,16 +22,17 @@ var buildInc = function(module, filename) {
                     return BuilderConcat(extension)(module);
                 });
                 break;
-            case "css":
-                return BuilderConcat(extension)(module);
-                break;
             case "html":
                 return BuilderCopy(module, new File(filename));
                 break;
             case "scss":
                 return BuilderSass(module);
             default:
-                return BuilderConcat(extension)(module);
+                return BuilderConcat(extension)(module).then(function() {
+                    if (module.assets && module.assets.indexOf(extension) !== -1) {
+                        return BuilderCopy(module, new File(filename));
+                    }
+                });
                 break;
         }
     } else {

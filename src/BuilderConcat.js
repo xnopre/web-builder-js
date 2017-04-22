@@ -2,8 +2,6 @@ var Files = require("./Files");
 var Q = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
-var BuilderCopy = require("./BuilderCopy");
-
 module.exports = function(extension) {
     return function(module) {
         if (!module.concat || !module.concat[extension]) {
