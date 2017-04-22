@@ -16,6 +16,14 @@ module.exports = {
             },
             assets: ["txt"],
             watch: true
+        },
+        main2: {
+            src: "test",
+            browserify: {
+                entry: "index.js",
+                output: "bundle.js"
+            },
+            watch: true
         }
     },
 }

@@ -40,6 +40,15 @@ var buildInc = function(module, filename) {
     }
 }
 
+var toSet = function(array) {
+    var result = [];
+    array.forEach(function(item) {
+        if (result.indexOf(item) === -1) {
+            result.push(item);
+        }
+    })
+    return result;
+}
 
 module.exports = function(config) {
     var configHelper = require("./ConfigHelper")(config);
@@ -48,33 +57,37 @@ module.exports = function(config) {
     buildTask(config).then(function() {
         return serveTask(config);
     }).then(function(browserSync) {
-        modules.forEach(function(module) {
-            if (module.watch) {
-                console.log("module", module.name, ": watching dir", module.src);
-                watch.watchTree(module.src, {interval: 1}, function (file, curr, prev) {
-                    if (typeof file == "object" && prev === null && curr === null) {
-        //                console.log("walked done");
+        var watchedModules = modules.filter(function(module) {
+            return module.watch;
+        })
+        var srcDirs = toSet(watchedModules.map(function(module) {
+            return module.src;
+        }));
+        srcDirs.forEach(function(srcDir) {
+            console.log("watching dir", srcDir);
+            watch.watchTree(srcDir, {interval: 1}, function (file, curr, prev) {
+                if (typeof file == "object" && prev === null && curr === null) {
+    //                console.log("walked done");
+                } else {
+                    if (prev === null) {
+                        console.log("new file", file);
+                    } else if (curr.nlink === 0) {
+                        console.log("file deleted", file);
                     } else {
-                        var promise;
-                        if (prev === null) {
-                            console.log("new file", file);
-                            promise = buildInc(module, file);
-                        } else if (curr.nlink === 0) {
-                            console.log("file deleted", file);
-                            promise = buildInc(module, file);
-                        } else {
-                            console.log("file changed", file);
-                            promise = buildInc(module, file);
-                        }
-                        promise.then(function() {
-                            browserSync.reload();
-                        }).catch(function(err) {
-                            console.error(err.stack);
-                        })
+                        console.log("file changed", file);
                     }
-                });
-            }
-        });
+                    Q.traverse(watchedModules, function(module) {
+                        if (file.startsWith(module.src)) {
+                            return buildInc(module, file);
+                        }
+                    }).then(function() {
+                        browserSync.reload();
+                    }).catch(function(err) {
+                        console.error(err.stack);
+                    })
+                }
+            });
+        })
     }).catch(function(err) {
         console.error(err.stack);
     });
