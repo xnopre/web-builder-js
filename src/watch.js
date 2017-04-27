@@ -27,7 +27,9 @@ var buildInc = function(module, filename) {
             default:
                 return BuilderConcat(extension)(module).then(function() {
                     if (module.assets && module.assets.indexOf(extension) !== -1) {
-                        return BuilderCopy(module, new File(filename));
+                        return BuilderCopy(module, new File(filename)).then(() => {
+                            return true;
+                        });
                     }
                 });
                 break;
@@ -73,9 +75,14 @@ module.exports = function(config) {
                     } else {
                         console.log("file changed", file);
                     }
+                    var fileTreated = false
                     Q.traverse(watchedModules, function(module) {
-                        if (file.startsWith(module.src)) {
-                            return buildInc(module, file);
+                        if (!fileTreated && file.startsWith(module.src)) {
+                            return buildInc(module, file).then(result => {
+                                if (result) {
+                                    fileTreated = true;
+                                }
+                            });
                         }
                     }).then(function() {
                         browserSync.reload();

@@ -14,7 +14,7 @@ module.exports = {
             concat: {
                 css: "bundle.css"
             },
-            assets: ["txt"],
+            assets: ["txt", "html"],
             watch: true
         },
         main2: {
