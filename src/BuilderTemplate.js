@@ -1,8 +1,11 @@
 var Q = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
-var getDep = function(depName) {
-    return depName;
+var getDep = function(inside) {
+    var index1 = inside.indexOf("\"");
+    var nextString = inside.substring(index1+1);
+    var index2 = nextString.indexOf("\"");
+    return nextString.substring(0, index2);
 };
 
 var toSet = function(array) {
@@ -25,7 +28,12 @@ var interpret = function(content) {
     } else {
         var start = content.substring(0, index);
         var startBar = content.substring(index + 2);
-        var nextIndex = startBar.indexOf("@{");
+        var nextIndexArobase = startBar.indexOf("@{");
+        var nextIndexDollar = startBar.indexOf("${");
+        var nextIndexArr = [nextIndexArobase, nextIndexDollar].filter(index => {
+            return index !== -1;
+        });
+        var nextIndex = nextIndexArr.length ? nextIndexArr.reduce(Math.min) : -1;
         var searchedInside = nextIndex === -1 ? startBar : startBar.substring(0, nextIndex);
         var indexEnd = searchedInside.lastIndexOf("}");
         if (indexEnd === -1) {
@@ -33,7 +41,7 @@ var interpret = function(content) {
         }
         var inside = searchedInside.substring(0, indexEnd);
         var end = startBar.substring(indexEnd + 1);
-        var depName = eval("getDep("+inside+")");
+        var depName = getDep(inside);
         var interpretedEnd = interpret(end);
         return {
             content: start + "${includeTemplate(" + inside + ")}" + interpretedEnd.content,
@@ -57,17 +65,37 @@ module.exports = function(module, filename) {
     }
     console.log("building module", module.name, ": Template");
     var outputDir = new File(module.dist+"/"+module.template.output);
-    var cachedTemplates = {};
     var getTemplateFct = function(file, templateName) {
-        var cachedTemplate = cachedTemplates[templateName];
+        return getTemplateFile(file, templateName).then(content => {
+            return "templates[\""+templateName+"\"] = function(props) { return `"+interpret(content).content+"` };";
+        });
+    }
+    var cachedFiles = {};
+    var getTemplateFile = function(file, templateName) {
+        var cachedTemplate = cachedFiles[templateName];
         if (cachedTemplate) {
             return Q.value(cachedTemplate);
         }
         return file.read().then(content => {
-            return "templates[\""+templateName+"\"] = function(props) { return `"+interpret(content).content+"` };";
-        }).then(templateFct => {
-            cachedTemplates[templateName] = templateFct;
-            return templateFct;
+            cachedFiles[templateName] = content;
+            return content;
+        })
+    }
+
+    var getAllDeps = function(depName) {
+        var depFile = new File(module.src+"/"+depName);
+        var result = [];
+        return getTemplateFile(depFile, depName).then(content => {
+            var interpreted = interpret(content);
+            var deps = interpreted.deps;
+            result = result.concat(deps);
+            return Q.traverse(deps, dep => {
+                return getAllDeps(dep).then(subDeps => {
+                    result = result.concat(subDeps);
+                })
+            }).then(() => {
+                return result;
+            })
         })
     }
 
@@ -82,9 +110,8 @@ module.exports = function(module, filename) {
             var rootFile = new File(module.src+"/"+root);
             var outputFile = outputDir.child(root);
             console.log(rootFile.path, " => ", outputFile.path);
-            return rootFile.read().then(content => {
-                var interpreted = interpret(content);
-                var deps = [root].concat(toSet(interpreted.deps));
+            return getAllDeps(root).then(deps => {
+                deps = toSet([root].concat(deps));
                 return Q.traverse(deps.reverse(), dep => {
                     var depFile = new File(module.src+"/"+dep);
                     return getTemplateFct(depFile, dep);
@@ -97,8 +124,9 @@ module.exports = function(module, filename) {
                         var htmlResult = eval(jsContent);
                         return htmlResult;
                     } catch(err) {
-                        console.error(jsContent);
-                        throw err;
+                        return new File("template-error.js").write(jsContent).then(() => {
+                            throw err;
+                        })
                     }
                 })
             }).then(html => {
