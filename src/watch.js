@@ -9,11 +9,12 @@ var BuilderCopy = require("./BuilderCopy");
 var BuilderBrowserify = require("./BuilderBrowserify");
 var BuilderConcat = require("./BuilderConcat");
 var BuilderSass = require("./BuilderSass");
+var BuilderTemplate = require("./BuilderTemplate");
 
 var buildTask = require("./build");
 var serveTask = require("./serve");
 
-var buildInc = function(module, filename) {
+var buildInc = function(module, filename, assetCopied) {
     if (Files.isRegularFile(filename)) {
         var extension = Files.getExtension(filename);
         switch(extension) {
@@ -26,11 +27,15 @@ var buildInc = function(module, filename) {
                 return BuilderSass(module);
             default:
                 return BuilderConcat(extension)(module).then(function() {
-                    if (module.assets && module.assets.indexOf(extension) !== -1) {
+                    if (!assetCopied && module.assets && module.assets.indexOf(extension) !== -1) {
                         return BuilderCopy(module, new File(filename)).then(() => {
                             return true;
                         });
                     }
+                }).then(result => {
+                    return BuilderTemplate(module, filename).then(() => {
+                        return result;
+                    })
                 });
                 break;
         }
@@ -75,12 +80,15 @@ module.exports = function(config) {
                     } else {
                         console.log("file changed", file);
                     }
-                    var fileTreated = false
-                    Q.traverse(watchedModules, function(module) {
-                        if (!fileTreated && file.startsWith(module.src)) {
-                            return buildInc(module, file).then(result => {
+                    var assetCopied = false
+                    var moduleBuilt = watchedModules.filter(module => {
+                        return module.src === srcDir;
+                    })
+                    Q.traverse(moduleBuilt, function(module) {
+                        if (file.startsWith(module.src)) {
+                            return buildInc(module, file, assetCopied).then(result => {
                                 if (result) {
-                                    fileTreated = true;
+                                    assetCopied = true;
                                 }
                             });
                         }

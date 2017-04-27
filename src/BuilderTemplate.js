@@ -51,7 +51,7 @@ var includeTemplate = function(templateName, props) {
     return templates[templateName].bind(props)(props);
 }
 
-module.exports = function(module) {
+module.exports = function(module, filename) {
     if (!(module.template && module.template.roots && module.template.output)) {
         return Q.empty();
     }
@@ -72,7 +72,13 @@ module.exports = function(module) {
     }
 
     return outputDir.mkdirs().then(function() {
-        return Q.traverse(module.template.roots, root => {
+        var roots = module.template.roots;
+        if (filename) {
+            roots = roots.filter(root => {
+                return filename.endsWith(root);
+            });
+        }
+        return Q.traverse(roots, root => {
             var rootFile = new File(module.src+"/"+root);
             var outputFile = outputDir.child(root);
             console.log(rootFile.path, " => ", outputFile.path);

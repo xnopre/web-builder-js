@@ -29,8 +29,10 @@ module.exports = {
             src: "test/templates",
             template: {
                 roots: ["root.html"],
-                output: "template"
-            }
+                output: "template_output"
+            },
+            assets: [],
+            watch: true
         }
     },
 }
