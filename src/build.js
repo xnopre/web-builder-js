@@ -4,6 +4,7 @@ var BuilderBrowserify = require("./BuilderBrowserify");
 var BuilderAssets = require("./BuilderAssets");
 var BuilderConcat = require("./BuilderConcat");
 var BuilderSass = require("./BuilderSass");
+var BuilderTemplate = require("./BuilderTemplate");
 var File = require("rauricoste-file");
 var Q = require("rauricoste-promise-light");
 
@@ -25,6 +26,8 @@ module.exports = function(config, isProd) {
                 })
             }).then(function() {
                 return BuilderSass(module);
+            }).then(() => {
+                return BuilderTemplate(module);
             })
         })
     })

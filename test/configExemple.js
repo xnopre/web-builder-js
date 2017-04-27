@@ -24,6 +24,13 @@ module.exports = {
                 output: "bundle.js"
             },
             watch: true
+        },
+        templateTest: {
+            src: "test/templates",
+            template: {
+                roots: ["root.html"],
+                output: "template"
+            }
         }
     },
 }

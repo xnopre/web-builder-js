@@ -22,9 +22,6 @@ var buildInc = function(module, filename) {
                     return BuilderConcat(extension)(module);
                 });
                 break;
-            case "html":
-                return BuilderCopy(module, new File(filename));
-                break;
             case "scss":
                 return BuilderSass(module);
             default:
