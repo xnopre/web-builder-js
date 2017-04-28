@@ -101,12 +101,14 @@ module.exports = function(module, filename) {
 
     return outputDir.mkdirs().then(function() {
         var roots = module.template.roots;
+        var filteredRoots = roots;
         if (filename) {
-            roots = roots.filter(root => {
+            filteredRoots = roots.filter(root => {
                 return filename.endsWith(root);
             });
+            filteredRoots = filteredRoots.length ? filteredRoots : roots;
         }
-        return Q.traverse(roots, root => {
+        return Q.traverse(filteredRoots, root => {
             var rootFile = new File(module.src+"/"+root);
             var outputFile = outputDir.child(root);
             console.log(rootFile.path, " => ", outputFile.path);
