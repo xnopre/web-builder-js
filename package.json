@@ -22,5 +22,7 @@
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "rauricoste-tests": "0.0.x"
+  }
 }
