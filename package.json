@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "node test/test.js"
+    "start": "node test/liveTests.js",
+    "test": "node ./node_modules/mocha/bin/mocha --require './src/tests' 'src/**/*.spec.js'"
   },
   "author": "",
   "license": "ISC",
