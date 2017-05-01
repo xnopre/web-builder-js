@@ -1,11 +1,13 @@
 var Arrays = require("./Arrays");
 var Q = require("rauricoste-promise-light");
-var TemplateTranspiler = require("./TemplateTranspiler");
+
+var encapsulate = function(jsContentArray) {
+    return ["(function() {"].concat(jsContentArray).concat(["})();"]);
+}
 
 var TemplateComponentBuilder = function(templateLoader) {
     this.templateLoader = templateLoader;
     this.cachedTemplates = {};
-    this.cachedInterpretedTemplates = {};
 }
 TemplateComponentBuilder.prototype.getTemplate = function(templateName) {
     var cachedTemplate = this.cachedTemplates[templateName];
@@ -17,20 +19,16 @@ TemplateComponentBuilder.prototype.getTemplate = function(templateName) {
         return content;
     })
 }
-TemplateComponentBuilder.prototype.getInterpreted = function(templateName) {
-    var cachedInterpreted = this.cachedInterpretedTemplates[templateName];
-    if (cachedInterpreted) {
-        return Q.value(cachedInterpreted);
-    }
-    return this.getTemplate(templateName).then(content => {
-        var interpreted = TemplateTranspiler.interpret(content);
-        this.cachedInterpretedTemplates[templateName] = interpreted;
-        return interpreted;
-    })
-}
 TemplateComponentBuilder.prototype.getAllDeps = function(templateName) {
-    return this.getInterpreted(templateName).then(interpreted => {
-        var deps = interpreted.deps;
+    return this.getTemplate(templateName).then(templateContent => {
+        var jsContent = encapsulate([
+            "var templateDeps = [];",
+            "var template = function(name) { templateDeps.push(name); };",
+            "var props = {};",
+            "`"+templateContent+"`",
+            "return templateDeps;"
+        ]).join("\n");
+        var deps = eval(jsContent);
         var result = deps;
         return Q.traverse(deps, dep => {
             return this.getAllDeps(dep).then(subDeps => {
@@ -42,8 +40,8 @@ TemplateComponentBuilder.prototype.getAllDeps = function(templateName) {
     })
 }
 TemplateComponentBuilder.prototype.getTemplateFct = function(templateName) {
-    return this.getInterpreted(templateName).then(interpreted => {
-        return "templates[\""+templateName+"\"] = function(props) { return `"+interpreted.content+"` };";
+    return this.getTemplate(templateName).then(template => {
+        return "templates[\""+templateName+"\"] = function(props) { return `"+template+"` };";
     });
 }
 TemplateComponentBuilder.prototype.build = function(templateName) {
@@ -51,10 +49,12 @@ TemplateComponentBuilder.prototype.build = function(templateName) {
         return Q.traverse([templateName].concat(deps).reverse(), dep => {
             return this.getTemplateFct(dep);
         }).then(templateFcts => {
-            var jsContent = "var templates = {};\n";
-            jsContent += "var includeTemplate = "+includeTemplateString+";\n";
-            jsContent += templateFcts.join("\n")+";\n";
-            jsContent += "includeTemplate(\""+templateName+"\");";
+            var jsContent = encapsulate([
+                "var templates = {};",
+                "var template = "+includeTemplateString+";",
+            ].concat(templateFcts).concat([
+                "return template(\""+templateName+"\");"
+            ])).join("\n");
             return jsContent;
         })
     })
