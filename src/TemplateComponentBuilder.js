@@ -28,7 +28,13 @@ TemplateComponentBuilder.prototype.getAllDeps = function(templateName) {
             "`"+templateContent+"`",
             "return templateDeps;"
         ]).join("\n");
-        var deps = eval(jsContent);
+        var deps;
+        try {
+            deps = eval(jsContent);
+        } catch(err) {
+            err.message = "Error when trying to get dependancies from template "+templateName+". "+err.message;
+            throw err;
+        }
         var result = deps;
         return Q.traverse(deps, dep => {
             return this.getAllDeps(dep).then(subDeps => {
