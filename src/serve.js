@@ -18,7 +18,8 @@ var uniqsBy = function(objects, fonction) {
 module.exports = function(config) {
     var browserSync = require("browser-sync").create();
     browserSync.init({
-        server: config.dist
+        server: config.dist,
+        host: "*"
     })
     return Q.value(browserSync);
 }
