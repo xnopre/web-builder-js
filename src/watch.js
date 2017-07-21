@@ -20,7 +20,7 @@ var buildInc = function(module, filename, assetCopied) {
         switch(extension) {
             case "js":
                 return BuilderBrowserify(module).then(function() {
-                    return BuilderConcat(extension)(module);
+                    return BuilderConcat("js")(module);
                 });
                 break;
             case "scss":
@@ -82,16 +82,14 @@ module.exports = function(config) {
                     }
                     var assetCopied = false
                     var moduleBuilt = watchedModules.filter(module => {
-                        return module.src === srcDir;
+                        return module.src === srcDir && file.startsWith(module.src);
                     })
                     Q.traverse(moduleBuilt, function(module) {
-                        if (file.startsWith(module.src)) {
-                            return buildInc(module, file, assetCopied).then(result => {
-                                if (result) {
-                                    assetCopied = true;
-                                }
-                            });
-                        }
+                        return buildInc(module, file, assetCopied).then(result => {
+                            if (result) {
+                                assetCopied = true;
+                            }
+                        });
                     }).then(function() {
                         browserSync.reload();
                     }).catch(function(err) {
