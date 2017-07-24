@@ -14,7 +14,9 @@ var BuilderTemplate = require("./BuilderTemplate");
 var buildTask = require("./build");
 var serveTask = require("./serve");
 
-var buildInc = function(module, filename, assetCopied) {
+var debouncer = require("./debouncer");
+
+var buildInc = debouncer.debounceByKey(function(module, filename, assetCopied) {
     if (Files.isRegularFile(filename)) {
         var extension = Files.getExtension(filename);
         switch(extension) {
@@ -42,7 +44,11 @@ var buildInc = function(module, filename, assetCopied) {
     } else {
         return Q.empty();
     }
-}
+}, 500, (module, filename) => {
+    var extension = Files.getExtension(filename);
+    var key = module.name+"___"+extension;
+    return key;
+})
 
 var toSet = function(array) {
     var result = [];
