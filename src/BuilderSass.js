@@ -1,31 +1,30 @@
 var sass = require('node-sass');
-var Q = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
 module.exports = function(module) {
     if (!(module.sass && module.sass.entry && module.sass.output)) {
-        return Q.empty();
+        return Promise.resolve();
     }
     console.log("building module", module.name, ": SASS");
     var inputFile = new File(module.src+"/"+module.sass.entry);
     var outputFile = new File(module.dist+"/"+module.sass.output);
     return outputFile.parent().mkdirs().then(function() {
-        var defer = Q.defer();
-        sass.render({
-            file: inputFile.path,
-            outputStyle: "nested"
-        }, function(err, result) {
-            if (err) {
-                defer.reject(err);
-                return;
-            }
-            var cssContent = result.css.toString();
-            outputFile.write(cssContent).then(function() {
-                defer.resolve();
-            }).catch(function(err) {
-                defer.reject(err);
-            });
+        return new Promise((resolve, reject) => {
+            sass.render({
+                file: inputFile.path,
+                outputStyle: "nested"
+            }, function(err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                var cssContent = result.css.toString();
+                outputFile.write(cssContent).then(function() {
+                    resolve();
+                }).catch(function(err) {
+                    reject(err);
+                });
+            })
         })
-        return defer.promise;
     });
 }

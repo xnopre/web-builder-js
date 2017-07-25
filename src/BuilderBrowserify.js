@@ -2,14 +2,13 @@
 
 var fs = require("fs");
 var browserify = require("browserify");
-var Q = require("rauricoste-promise-light");
 var babelify = require("babelify");
 var File = require("rauricoste-file");
 var MinifyWrapper = require("./MinifyWrapper");
 
 var buildJs = function(module) {
     if (!(module.browserify && module.browserify.entry && module.browserify.output)) {
-        return Q.empty();
+        return Promise.resolve();
     }
     console.log("building module", module.name, ": JS");
     var entry = module.src+"/"+module.browserify.entry;
@@ -17,24 +16,24 @@ var buildJs = function(module) {
     console.log("Browserify", entry, " => ", output);
 
     return new File(output).parent().mkdirs().then(function() {
-        var defer = Q.defer();
-        var writeStream = fs.createWriteStream(output);
-        writeStream.on("close", function() {
-            defer.resolve();
-        })
-        browserify(entry, {debug: true})
-          .transform(babelify, {
-            presets: ["es2015", "react"].map(function(presetName) {
-                return require("babel-preset-"+presetName);
+        return new Promise((resolve, reject) => {
+            var writeStream = fs.createWriteStream(output);
+            writeStream.on("close", function() {
+                resolve();
             })
-          })
-          .bundle(function(err, buf) {
-            if (err) {
-                defer.reject(err);
-            }
-          })
-          .pipe(writeStream)
-        return defer.promise;
+            browserify(entry, {debug: true})
+              .transform(babelify, {
+                presets: ["es2015", "react"].map(function(presetName) {
+                    return require("babel-preset-"+presetName);
+                })
+              })
+              .bundle(function(err, buf) {
+                if (err) {
+                    reject(err);
+                }
+              })
+              .pipe(writeStream)
+        })
     }).then(function() {
         if (module.isProd) {
             var outputMin = output+".min";

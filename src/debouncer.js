@@ -1,20 +1,18 @@
-var Q = require("rauricoste-promise-light");
-
 var debouncer = {
     debounce: function(func, wait) {
         var timeout;
         return function() {
-            var defer = Q.defer();
-            var context = this, args = arguments;
-            var later = function() {
-                timeout = null;
-                  defer.resolve(func.apply(context, args));
-            };
-            if (timeout) {
-                clearTimeout(timeout);
-            }
-            timeout = setTimeout(later, wait);
-            return defer.promise;
+            return new Promise((resolve, reject) => {
+                var context = this, args = arguments;
+                var later = function() {
+                    timeout = null;
+                    resolve(func.apply(context, args));
+                };
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                timeout = setTimeout(later, wait);
+            })
         };
     },
     debounceByKey: function(func, wait, keyGetter) {

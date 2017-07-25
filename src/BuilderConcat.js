@@ -1,11 +1,11 @@
 var Files = require("./Files");
-var Q = require("rauricoste-promise-light");
+var Promises = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
 module.exports = function(extension) {
     return function(module) {
         if (!module.concat || !module.concat[extension]) {
-            return Q.empty();
+            return Promise.resolve();
         }
         console.log("building module", module.name, ":", extension);
         var srcFile = new File(module.src);
@@ -16,7 +16,7 @@ module.exports = function(extension) {
             return destFile.delete().catch(function() {}).then(function() {
                 return destFile.parent().mkdirs();
             }).then(function() {
-                return Q.traverse(files, function(file) {
+                return Promises.traverse(files, function(file) {
                     return file.read().then(function(content) {
                         return destFile.append(content+"\n");
                     })

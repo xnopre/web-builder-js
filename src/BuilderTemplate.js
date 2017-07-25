@@ -1,10 +1,10 @@
-var Q = require("rauricoste-promise-light");
+var Promises = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 var TemplateComponentBuilder = require("./TemplateComponentBuilder");
 
 module.exports = function(module, filename) {
     if (!(module.template && module.template.roots && module.template.output)) {
-        return Q.empty();
+        return Promise.resolve();
     }
     console.log("building module", module.name, ": Template");
     var outputDir = new File(module.dist+"/"+module.template.output);
@@ -20,7 +20,7 @@ module.exports = function(module, filename) {
         var builder = new TemplateComponentBuilder(templateName => {
             return new File(module.src+"/"+templateName).read();
         });
-        return Q.traverse(filteredRoots, root => {
+        return Promises.traverse(filteredRoots, root => {
             var rootFile = new File(module.src+"/"+root);
             var outputFile = outputDir.child(root);
             console.log(rootFile.path, " => ", outputFile.path);

@@ -1,6 +1,4 @@
 var static = require('node-static');
-var Q = require("rauricoste-promise-light");
-
 
 var uniqsBy = function(objects, fonction) {
     var result = [];
@@ -21,5 +19,5 @@ module.exports = function(config) {
         server: config.dist,
         host: "*"
     })
-    return Q.value(browserSync);
+    return Promise.resolve(browserSync);
 }

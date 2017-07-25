@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Q = require("rauricoste-promise-light");
+var Promises = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 var watch = require("watch");
 
@@ -42,7 +42,7 @@ var buildInc = debouncer.debounceByKey(function(module, filename, assetCopied) {
                 break;
         }
     } else {
-        return Q.empty();
+        return Promise.resolve();
     }
 }, 500, (module, filename) => {
     var extension = Files.getExtension(filename);
@@ -90,7 +90,7 @@ module.exports = function(config) {
                     var moduleBuilt = watchedModules.filter(module => {
                         return module.src === srcDir && file.startsWith(module.src);
                     })
-                    Q.traverse(moduleBuilt, function(module) {
+                    Promises.traverse(moduleBuilt, function(module) {
                         return buildInc(module, file, assetCopied).then(result => {
                             if (result) {
                                 assetCopied = true;

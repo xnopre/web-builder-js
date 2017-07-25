@@ -1,17 +1,16 @@
 var minify = require("minify");
-var Q = require("rauricoste-promise-light");
 var File = require("rauricoste-file");
 
 var minifyFct = function(inputFilename) {
-    var defer = Q.defer();
-    minify(inputFilename, function(error, data) {
-        if (error) {
-            defer.reject(error);
-        } else {
-            defer.resolve(data);
-        }
-    });
-    return defer.promise;
+    return new Promise((resolve, reject) => {
+        minify(inputFilename, function(error, data) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(data);
+            }
+        });
+    })
 }
 
 module.exports = function(inputFilename, outputFilename) {

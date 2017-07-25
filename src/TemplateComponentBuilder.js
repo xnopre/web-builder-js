@@ -1,5 +1,5 @@
 var Arrays = require("./Arrays");
-var Q = require("rauricoste-promise-light");
+var Promises = require("rauricoste-promise-light");
 
 var encapsulate = function(jsContentArray) {
     return ["(function() {"].concat(jsContentArray).concat(["})();"]);
@@ -12,7 +12,7 @@ var TemplateComponentBuilder = function(templateLoader) {
 TemplateComponentBuilder.prototype.getTemplate = function(templateName) {
     var cachedTemplate = this.cachedTemplates[templateName];
     if (cachedTemplate) {
-        return Q.value(cachedTemplate);
+        return Promise.resolve(cachedTemplate);
     }
     return this.templateLoader(templateName).then(content => {
         this.cachedTemplates[templateName] = content;
@@ -36,7 +36,7 @@ TemplateComponentBuilder.prototype.getAllDeps = function(templateName) {
             throw err;
         }
         var result = deps;
-        return Q.traverse(deps, dep => {
+        return Promises.traverse(deps, dep => {
             return this.getAllDeps(dep).then(subDeps => {
                 result = result.concat(subDeps);
             })
@@ -52,7 +52,7 @@ TemplateComponentBuilder.prototype.getTemplateFct = function(templateName) {
 }
 TemplateComponentBuilder.prototype.build = function(templateName) {
     return this.getAllDeps(templateName).then(deps => {
-        return Q.traverse([templateName].concat(deps).reverse(), dep => {
+        return Promises.traverse([templateName].concat(deps).reverse(), dep => {
             return this.getTemplateFct(dep);
         }).then(templateFcts => {
             var jsContent = encapsulate([
