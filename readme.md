@@ -38,7 +38,7 @@ file. This file is designed to be simple as possible.
 The drawback is that this tool cannot be customized much.
 
 Exemple :
-```json
+```js
 {
   // destination folder where the files will be built
   "dist": "dist",  
