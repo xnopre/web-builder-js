@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 var File = require("rauricoste-file");
 var watch = require("watch");
 
@@ -90,7 +90,7 @@ module.exports = function(config) {
                     var moduleBuilt = watchedModules.filter(module => {
                         return module.src === srcDir && file.startsWith(module.src);
                     })
-                    Promises.traverse(moduleBuilt, function(module) {
+                    PromisesTraverse(moduleBuilt, function(module) {
                         return buildInc(module, file, assetCopied).then(result => {
                             if (result) {
                                 assetCopied = true;

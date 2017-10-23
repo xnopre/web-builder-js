@@ -6,7 +6,7 @@ var BuilderConcat = require("./BuilderConcat");
 var BuilderSass = require("./BuilderSass");
 var BuilderTemplate = require("./BuilderTemplate");
 var File = require("rauricoste-file");
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 
 module.exports = function(config, isProd) {
     var configHelper = require("./ConfigHelper")(config);
@@ -15,13 +15,13 @@ module.exports = function(config, isProd) {
     return Promise.all(modules.map(function(module) {
         return new File(module.dist).mkdirs();
     })).then(function() {
-        return Promises.traverse(modules, function(module) {
+        return PromisesTraverse(modules, function(module) {
             return BuilderBrowserify(module).then(function() {
-                return Promises.traverse(module.assets, function(extension) {
+                return PromisesTraverse(module.assets, function(extension) {
                     return BuilderAssets(extension)(module);
                 })
             }).then(function() {
-                return Promises.traverse(Object.keys(module.concat || {}), function(extension) {
+                return PromisesTraverse(Object.keys(module.concat || {}), function(extension) {
                     return BuilderConcat(extension)(module);
                 })
             }).then(function() {

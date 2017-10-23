@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
     "babelify": "^7.3.0",
     "browser-sync": "^2.14.0",
     "browserify": "^13.1.0",
@@ -17,10 +19,8 @@
     "node-sass": "^3.8.0",
     "node-static": "^0.7.8",
     "rauricoste-file": "0.x",
-    "rauricoste-promise-light": "2.x",
-    "watch": "1.0.x",
-    "babel-preset-es2015": "^6.18.0",
-    "babel-preset-react": "^6.16.0"
+    "rauricoste-promise-traverse": "0.0.1",
+    "watch": "1.0.x"
   },
   "devDependencies": {
     "rauricoste-tests": "0.0.x"

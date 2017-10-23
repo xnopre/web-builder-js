@@ -1,5 +1,5 @@
 var Files = require("./Files");
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 var File = require("rauricoste-file");
 
 module.exports = function(extension) {
@@ -16,7 +16,7 @@ module.exports = function(extension) {
             return destFile.delete().catch(function() {}).then(function() {
                 return destFile.parent().mkdirs();
             }).then(function() {
-                return Promises.traverse(files, function(file) {
+                return PromisesTraverse(files, function(file) {
                     return file.read().then(function(content) {
                         return destFile.append(content+"\n");
                     })

@@ -1,5 +1,5 @@
 var Files = require("./Files");
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 var File = require("rauricoste-file");
 
 var BuilderCopy = require("./BuilderCopy");
@@ -14,7 +14,7 @@ module.exports = function(extension) {
         return srcFile.crawl(function(file) {
             return !file.isFile() || Files.getExtension(file.name()) === extension;
         }).then(function(files) {
-            return Promises.traverse(files, function(file) {
+            return PromisesTraverse(files, function(file) {
                 return BuilderCopy(module, file);
             });
         });

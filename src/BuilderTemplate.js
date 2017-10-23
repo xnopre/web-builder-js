@@ -1,4 +1,4 @@
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 var File = require("rauricoste-file");
 var TemplateComponentBuilder = require("./TemplateComponentBuilder");
 
@@ -20,7 +20,7 @@ module.exports = function(module, filename) {
         var builder = new TemplateComponentBuilder(templateName => {
             return new File(module.src+"/"+templateName).read();
         });
-        return Promises.traverse(filteredRoots, root => {
+        return PromisesTraverse(filteredRoots, root => {
             var rootFile = new File(module.src+"/"+root);
             var outputFile = outputDir.child(root);
             console.log(rootFile.path, " => ", outputFile.path);

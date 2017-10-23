@@ -1,5 +1,5 @@
 var Arrays = require("./Arrays");
-var Promises = require("rauricoste-promise-light");
+var PromisesTraverse = require("rauricoste-promise-traverse");
 
 var encapsulate = function(jsContentArray) {
     return ["(function() {"].concat(jsContentArray).concat(["})();"]);
@@ -36,7 +36,7 @@ TemplateComponentBuilder.prototype.getAllDeps = function(templateName) {
             throw err;
         }
         var result = deps;
-        return Promises.traverse(deps, dep => {
+        return PromisesTraverse(deps, dep => {
             return this.getAllDeps(dep).then(subDeps => {
                 result = result.concat(subDeps);
             })
@@ -52,7 +52,7 @@ TemplateComponentBuilder.prototype.getTemplateFct = function(templateName) {
 }
 TemplateComponentBuilder.prototype.build = function(templateName) {
     return this.getAllDeps(templateName).then(deps => {
-        return Promises.traverse([templateName].concat(deps).reverse(), dep => {
+        return PromisesTraverse([templateName].concat(deps).reverse(), dep => {
             return this.getTemplateFct(dep);
         }).then(templateFcts => {
             var jsContent = encapsulate([
