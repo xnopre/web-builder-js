@@ -25,7 +25,7 @@ module.exports = function(config, isProd) {
                     return BuilderConcat(extension)(module);
                 })
             }).then(function() {
-                return BuilderSass(module);
+                return BuilderSass(module, false);
             }).then(() => {
                 return BuilderTemplate(module);
             })

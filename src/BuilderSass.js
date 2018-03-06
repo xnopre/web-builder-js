@@ -1,7 +1,7 @@
 var sass = require('node-sass');
 var File = require("rauricoste-file");
 
-module.exports = function(module) {
+module.exports = function(module, sourceMapEmbed) {
     if (!(module.sass && module.sass.entry && module.sass.output)) {
         return Promise.resolve();
     }
@@ -12,7 +12,8 @@ module.exports = function(module) {
         return new Promise((resolve, reject) => {
             sass.render({
                 file: inputFile.path,
-                outputStyle: "nested"
+                outputStyle: "nested",
+                sourceMapEmbed: sourceMapEmbed
             }, function(err, result) {
                 if (err) {
                     reject(err);

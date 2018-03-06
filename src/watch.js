@@ -26,7 +26,7 @@ var buildInc = debouncer.debounceByKey(function(module, filename, assetCopied) {
                 });
                 break;
             case "scss":
-                return BuilderSass(module);
+                return BuilderSass(module, true);
             default:
                 return BuilderConcat(extension)(module).then(function() {
                     if (!assetCopied && module.assets && module.assets.indexOf(extension) !== -1) {
